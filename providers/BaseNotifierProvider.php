@@ -2,6 +2,7 @@
 
 namespace steroids\notifier\providers;
 
+use steroids\notifier\structures\NotifyParameters;
 use yii\base\BaseObject;
 
 abstract class BaseNotifierProvider extends BaseObject
@@ -11,7 +12,10 @@ abstract class BaseNotifierProvider extends BaseObject
      */
     public array $templates = [];
 
-    public function send(string $templatePath, array $params)
-    {
-    }
+    /**
+     * @param string $templatePath
+     * @param NotifyParameters $params
+     * @return mixed
+     */
+    public abstract function send(string $templatePath, $params);
 }

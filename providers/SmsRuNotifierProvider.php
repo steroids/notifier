@@ -3,6 +3,7 @@
 namespace steroids\sms;
 
 use steroids\notifier\providers\BaseNotifierProvider;
+use steroids\notifier\structures\SmsRuNotifyParameters;
 use yii\base\Exception;
 
 class SmsRuNotifierProvider extends BaseNotifierProvider
@@ -15,15 +16,14 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
     /**
      * @var array|null
      */
-    public $lastResult;
+    public ?array $lastResult;
 
     /**
-     * @param string $to
-     * @param string $text
-     * @param string [$from]
+     * @param string $templatePath
+     * @param SmsRuNotifyParameters $params
      * @throws Exception
      */
-    public function send(string $templatePath, array $params)
+    public function send(string $templatePath, $params)
     //public function internalSend($to, $text, $from = null)
     {
         $ch = curl_init("http://sms.ru/sms/send");
@@ -32,15 +32,15 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
 
         $post = [
             "api_id" => $this->apiId,
-            "to" => $to,
-            "text" => $text,
+            "to" => $params->to,
+            "text" => $params->text,
         ];
         // check from
-        if ($from) {
-            if (!preg_match("/^[a-z0-9_-]+$/i", $from) || preg_match('/^[0-9]+$/', $from)) {
+        if ($params->from) {
+            if (!preg_match("/^[a-z0-9_-]+$/i", $params->from) || preg_match('/^[0-9]+$/', $params->from)) {
                 throw new Exception('Illegal SMS.RU from number');
             }
-            $post['from'] = $from;
+            $post['from'] = $params->from;
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
