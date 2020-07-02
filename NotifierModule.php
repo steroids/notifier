@@ -8,7 +8,6 @@ use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 use steroids\core\traits\ModuleProvidersTrait;
-use steroids\auth\providers\BaseAuthProvider;
 use steroids\core\base\Module;
 use steroids\notifier\providers\MailerNotifierProvider;
 
@@ -21,11 +20,6 @@ class NotifierModule extends Module
     const PROVIDER_TYPE_PUSH = 'push';
 
     public array $templates = [];
-
-    /**
-     * @var BaseAuthProvider[]|array
-     */
-    public array $providers;
 
     public array $providersClasses = [
         'mailer' => MailerNotifierProvider::class,

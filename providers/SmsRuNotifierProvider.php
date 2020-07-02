@@ -3,12 +3,21 @@
 namespace steroids\sms;
 
 use steroids\notifier\providers\BaseNotifierProvider;
-use steroids\notifier\structures\SmsRuNotifyParameters;
+use steroids\notifier\structures\SmsNotifyParameters;
 use yii\base\Exception;
 
+/**
+ * When you registered you've got a @apiId
+ * which you can use for send sms notification
+ *
+ * Registration page
+ * https://sms.ru/?panel=register
+ */
 class SmsRuNotifierProvider extends BaseNotifierProvider
 {
     /**
+     * You've got this after registration
+     *
      * @var string
      */
     public string $apiId;
@@ -16,15 +25,14 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
     /**
      * @var array|null
      */
-    public ?array $lastResult;
+    public ?array $lastResult = null;
 
     /**
      * @param string $templatePath
-     * @param SmsRuNotifyParameters $params
+     * @param SmsNotifyParameters $params
      * @throws Exception
      */
     public function send(string $templatePath, $params)
-    //public function internalSend($to, $text, $from = null)
     {
         $ch = curl_init("http://sms.ru/sms/send");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -32,15 +40,16 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
 
         $post = [
             "api_id" => $this->apiId,
-            "to" => $params->to,
+            "to" => $params->receiver,
             "text" => $params->text,
         ];
-        // check from
-        if ($params->from) {
-            if (!preg_match("/^[a-z0-9_-]+$/i", $params->from) || preg_match('/^[0-9]+$/', $params->from)) {
+
+        // check address/number sender
+        if ($params->sender) {
+            if (!preg_match("/^[a-z0-9_-]+$/i", $params->sender) || preg_match('/^[0-9]+$/', $params->sender)) {
                 throw new Exception('Illegal SMS.RU from number');
             }
-            $post['from'] = $params->from;
+            $post['from'] = $params->sender;
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 

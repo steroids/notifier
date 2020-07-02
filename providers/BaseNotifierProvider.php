@@ -8,6 +8,13 @@ use yii\base\BaseObject;
 abstract class BaseNotifierProvider extends BaseObject
 {
     /**
+     * Provider name
+     *
+     * @var string
+     */
+    public string $name = '';
+
+    /**
      * @var array
      */
     public array $templates = [];

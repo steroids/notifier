@@ -9,21 +9,25 @@ use yii\di\Instance;
 use yii\swiftmailer\Mailer;
 use steroids\notifier\exceptions\NotifierException;
 
+/**
+ * @property-read Mailer $mailer
+ */
 class MailerNotifierProvider extends BaseNotifierProvider
 {
     /**
      * @var Mailer
      */
-    public $mailer = 'mailer';
+    private $_mailer = null;
 
     /**
      * @throws InvalidConfigException
      */
-    public function init()
+    public function getMailer()
     {
-        parent::init();
-
-        $this->mailer = Instance::ensure($this->mailer, Mailer::class);
+        if (!$this->_mailer) {
+            $this->_mailer = Instance::ensure($this->_mailer, Mailer::class);
+        }
+        return $this->_mailer;
     }
 
     /**
@@ -33,20 +37,16 @@ class MailerNotifierProvider extends BaseNotifierProvider
      */
     public function send(string $templatePath, $params)
     {
-        if (empty($params->email)) {
+        if (empty($params->receiver)) {
             throw new NotifierException('Not found email for send mail.');
         }
 
         // Send
-        $message = $this->mailer->compose($templatePath,
-            array_merge(
-                $params->composeParameters,
-                ['user' => $params->user]
-            )
-        );
+        $message = $this->mailer->compose($templatePath,$params->composeParameters);
         if (!$message->getSubject()) {
             $message->setSubject(Yii::$app->name);
         }
-        $message->setTo($params->email)->send();
+        $message->setFrom($params->sender);
+        $message->setTo($params->receiver)->send();
     }
 }

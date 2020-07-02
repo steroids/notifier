@@ -5,36 +5,46 @@ namespace steroids\notifier\providers;
 use ExponentPhpSDK\Exceptions\ExpoException;
 use ExponentPhpSDK\Exceptions\UnexpectedResponseException;
 use ExponentPhpSDK\Expo;
-use steroids\notifier\structures\ExpoNotifyParameters;
+use steroids\notifier\exceptions\NotifierException;
+use steroids\notifier\structures\PushNotifyParameters;
 
+/**
+ * @property-read Expo $pushClient
+ */
 class ExpoNotifierProvider extends BaseNotifierProvider
 {
-    private Expo $pushClient;
+    private ?Expo $_pushClient = null;
 
-    public function init()
+    /**
+     * @return Expo
+     */
+    public function getPushClient()
     {
-        parent::init();
-
-        $this->pushClient = Expo::normalSetup();
+        if (!$this->_pushClient) {
+            $this->_pushClient = Expo::normalSetup();
+        }
+        return $this->_pushClient;
     }
 
     /**
      * @param string $templatePath
-     * @param ExpoNotifyParameters $params
+     * @param PushNotifyParameters $params
      * @return mixed|void
      * @throws ExpoException
-     * @throws UnexpectedResponseException
+     * @throws UnexpectedResponseException|NotifierException
      */
     public function send(string $templatePath, $params)
     {
         if (!empty($params->pushToken)) {
-            $this->pushClient->subscribe($params->channel, $params->pushToken);
-            $notification = [
-                'title' => $params->title,
-                'body' => $params->message,
-                'data' => $params->data
-            ];
-            $this->pushClient->notify([$params->channel], $notification);
+            throw new NotifierException("Push token cannot be empty");
         }
+
+        $this->pushClient->subscribe($params->channel, $params->pushToken);
+        $notification = [
+            'title' => $params->title,
+            'body' => $params->message,
+            'data' => $params->data
+        ];
+        $this->pushClient->notify([$params->channel], $notification);
     }
 }
