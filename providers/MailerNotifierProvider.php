@@ -14,12 +14,16 @@ use steroids\notifier\exceptions\NotifierException;
  */
 class MailerNotifierProvider extends BaseNotifierProvider
 {
-    const MAILER_COMPONENT_NAME = 'mailer';
+    /**
+     * @var object|string|array
+     * @see Instance::ensure()
+     */
+    private $mailerConfig = 'mailer';
 
     /**
      * @var Mailer
      */
-    private $_mailer = null;
+    private $_mailer;
 
     /**
      * @throws InvalidConfigException
@@ -27,9 +31,14 @@ class MailerNotifierProvider extends BaseNotifierProvider
     public function getMailer()
     {
         if (!$this->_mailer) {
-            $this->_mailer = Instance::ensure(static::MAILER_COMPONENT_NAME, Mailer::class);
+            $this->_mailer = Instance::ensure($this->mailerConfig, Mailer::class);
         }
         return $this->_mailer;
+    }
+
+    public function setMailer($mailer)
+    {
+        $this->mailerConfig = $mailer;
     }
 
     /**
