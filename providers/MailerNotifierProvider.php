@@ -14,6 +14,8 @@ use steroids\notifier\exceptions\NotifierException;
  */
 class MailerNotifierProvider extends BaseNotifierProvider
 {
+    const MAILER_COMPONENT_NAME = 'mailer';
+
     /**
      * @var Mailer
      */
@@ -25,7 +27,7 @@ class MailerNotifierProvider extends BaseNotifierProvider
     public function getMailer()
     {
         if (!$this->_mailer) {
-            $this->_mailer = Instance::ensure($this->_mailer, Mailer::class);
+            $this->_mailer = Instance::ensure(static::MAILER_COMPONENT_NAME, Mailer::class);
         }
         return $this->_mailer;
     }
