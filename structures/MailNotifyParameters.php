@@ -9,16 +9,7 @@ class MailNotifyParameters extends NotifyParameters
      *
      * @var string
      */
-    public string $receiver = '';
-
-    /**
-     * Address of the sender.
-     * You may also specify sender name in addition to email address using format:
-     * `[email => name]`.
-     *
-     * @var array|string
-     */
-    public $sender;
+    public string $to = '';
 
     /**
      * Parameters (name-value pairs) that will be extracted
@@ -26,5 +17,5 @@ class MailNotifyParameters extends NotifyParameters
      *
      * @var array
      */
-    public array $composeParameters = [];
+    public array $params = [];
 }

@@ -48,16 +48,16 @@ class MailerNotifierProvider extends BaseNotifierProvider
      */
     public function send(string $templatePath, $params)
     {
-        if (empty($params->receiver)) {
+        if (empty($params->to)) {
             throw new NotifierException('Not found email for send mail.');
         }
 
         // Send
-        $message = $this->mailer->compose($templatePath,$params->composeParameters);
+        $message = $this->mailer->compose($templatePath, $params->params);
         if (!$message->getSubject()) {
             $message->setSubject(Yii::$app->name);
         }
-        $message->setFrom($params->sender);
-        $message->setTo($params->receiver)->send();
+        //$message->setFrom($params->sender);
+        $message->setTo($params->to)->send();
     }
 }
