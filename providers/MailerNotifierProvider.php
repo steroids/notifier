@@ -2,62 +2,88 @@
 
 namespace steroids\notifier\providers;
 
-use steroids\notifier\structures\MailNotifyParameters;
+use steroids\notifier\NotifierModule;
 use \Yii;
 use yii\base\InvalidConfigException;
-use yii\di\Instance;
+use yii\helpers\ArrayHelper;
 use yii\swiftmailer\Mailer;
-use steroids\notifier\exceptions\NotifierException;
 
 /**
  * @property-read Mailer $mailer
  */
 class MailerNotifierProvider extends BaseNotifierProvider
 {
-    /**
-     * @var object|string|array
-     * @see Instance::ensure()
-     */
-    private $mailerConfig = 'mailer';
+    public string $from = '';
+    public string $host = '';
+    public string $username = '';
+    public string $password = '';
+    public string $port = '587';
+    public string $encryption = 'tsl';
 
     /**
-     * @var Mailer
+     * @var Mailer|array
      */
-    private $_mailer;
+    private $_mailer = [];
+
+    /**
+     * @inheritDoc
+     */
+    public static function type()
+    {
+        return NotifierModule::PROVIDER_TYPE_MAIL;
+    }
 
     /**
      * @throws InvalidConfigException
      */
     public function getMailer()
     {
-        if (!$this->_mailer) {
-            $this->_mailer = Instance::ensure($this->mailerConfig, Mailer::class);
+        if (is_array($this->_mailer)) {
+            $this->_mailer = Yii::createObject(ArrayHelper::merge(
+                $this->defaultMailer(),
+                $this->_mailer ?: []
+            ));
         }
         return $this->_mailer;
     }
 
+    /**
+     * @param Mailer|array $mailer
+     */
     public function setMailer($mailer)
     {
-        $this->mailerConfig = $mailer;
+        $this->_mailer = $mailer;
     }
 
     /**
-     * @param string $templatePath
-     * @param MailNotifyParameters $params
-     * @throws NotifierException
+     * @inheritDoc
      */
-    public function send(string $templatePath, $params)
+    public function send($message)
     {
-        if (empty($params->to)) {
-            throw new NotifierException('Not found email for send mail.');
-        }
+        $this->mailer->compose()
+            ->setTo($message->to)
+            ->setHtmlBody((string)$message)
+            ->send();
+    }
 
-        // Send
-        $message = $this->mailer->compose($templatePath, $params->params);
-        if (!$message->getSubject()) {
-            $message->setSubject(Yii::$app->name);
-        }
-        //$message->setFrom($params->sender);
-        $message->setTo($params->to)->send();
+    protected function defaultMailer()
+    {
+        return [
+            'class' => '\yii\swiftmailer\Mailer',
+            'messageConfig' => [
+                'subject' => Yii::$app->name,
+                'from' => $this->from,
+            ],
+            'transport' => $this->host
+                ? [
+                    'class' => 'Swift_SmtpTransport',
+                    'host' => $this->host,
+                    'username' => $this->host,
+                    'password' => $this->host,
+                    'port' => $this->port,
+                    'encryption' => $this->encryption,
+                ]
+                : [],
+        ];
     }
 }

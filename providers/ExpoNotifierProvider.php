@@ -2,11 +2,9 @@
 
 namespace steroids\notifier\providers;
 
-use ExponentPhpSDK\Exceptions\ExpoException;
-use ExponentPhpSDK\Exceptions\UnexpectedResponseException;
 use ExponentPhpSDK\Expo;
-use steroids\notifier\exceptions\NotifierException;
-use steroids\notifier\structures\PushNotifyParameters;
+use steroids\notifier\NotifierModule;
+use yii\helpers\ArrayHelper;
 
 /**
  * @property-read Expo $pushClient
@@ -14,6 +12,14 @@ use steroids\notifier\structures\PushNotifyParameters;
 class ExpoNotifierProvider extends BaseNotifierProvider
 {
     private ?Expo $_pushClient = null;
+
+    /**
+     * @inheritDoc
+     */
+    public static function type()
+    {
+        return NotifierModule::PROVIDER_TYPE_PUSH;
+    }
 
     /**
      * @return Expo
@@ -27,24 +33,20 @@ class ExpoNotifierProvider extends BaseNotifierProvider
     }
 
     /**
-     * @param string $templatePath
-     * @param PushNotifyParameters $params
-     * @return mixed|void
-     * @throws ExpoException
-     * @throws UnexpectedResponseException|NotifierException
+     * @inheritDoc
      */
-    public function send(string $templatePath, $params)
+    public function send($message)
     {
-        if (!empty($params->pushToken)) {
-            throw new NotifierException("Push token cannot be empty");
-        }
+        // Subscribes a given channel to the Expo Push Notifications.
+        $channel = ArrayHelper::getValue($message->params, 'channel', 'default');
 
-        $this->pushClient->subscribe($params->channel, $params->pushToken);
+        $this->pushClient->subscribe($channel, $message->to);
         $notification = [
-            'title' => $params->title,
-            'body' => $params->message,
-            'data' => $params->data
+            'title' => $message->title,
+            'body' => (string)$message,
+            'data' => ArrayHelper::getValue($message->params, 'data'),
         ];
-        $this->pushClient->notify([$params->channel], $notification);
+
+        $this->pushClient->notify($channel, $notification);
     }
 }
