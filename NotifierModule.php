@@ -110,8 +110,8 @@ class NotifierModule extends Module
             /** @var BaseNotifierProvider $className */
             $className = is_object($provider)
                 ? get_class($provider)
-                : (ArrayHelper::getValue($provider, 'className') ?: ArrayHelper::getValue($this->providersClasses, $name));
-            if (is_subclass_of($className, BaseNotifierProvider::class) && $className::type() === $providerType) {
+                : (ArrayHelper::getValue($provider, 'class') ?: ArrayHelper::getValue($this->providersClasses, $name));
+            if ($className && $className::type() === $providerType) {
                 return $name;
             }
         }

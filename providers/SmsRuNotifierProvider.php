@@ -1,10 +1,12 @@
 <?php
 
-namespace steroids\sms;
+namespace steroids\notifier\providers;
 
 use steroids\notifier\NotifierModule;
 use steroids\notifier\providers\BaseNotifierProvider;
 use yii\base\Exception;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 
 /**
  * When you registered you've got a @apiId
@@ -28,12 +30,7 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
      * Not required.
      * @var string
      */
-    public string $sender;
-
-    /**
-     * @var array|null
-     */
-    public ?array $lastResult = null;
+    public ?string $sender = '';
 
     /**
      * @inheritDoc
@@ -48,14 +45,19 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
      */
     public function send($message)
     {
-        $ch = curl_init("http://sms.ru/sms/send");
+        $ch = curl_init("https://sms.ru/sms/send");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 
+        $to = $message->to;
+        $to = preg_replace('/[^0-9]+/', '', $to);
+        $to = preg_replace('/[^8]/', '7', $to);
+
         $post = [
             'api_id' => $this->apiId,
-            'to' => $message->to,
-            'text' => (string)$message,
+            'to' => $to,
+            'msg' => (string)$message,
+            'json' => 1,
         ];
 
         // check address/number sender
@@ -67,24 +69,24 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
-        $this->lastResult = curl_exec($ch);
+        $response = curl_exec($ch);
         curl_close($ch);
 
         // Success path
-        if (is_string($this->lastResult)) {
-            $this->lastResult = explode("\n", $this->lastResult);
+        if (is_string($response)) {
+            $json = Json::decode($response);
 
-            if ($this->lastResult[0] == 100) {
-                return; // OK
+            if (ArrayHelper::getValue($json, 'status') === 'OK') {
+                foreach ($json->sms as $phone => $data) {
+                    if ($data->status !== 'OK') {
+                        throw new Exception('SMS.RU request failed: ' . $data->status_code . '. ' . $data->status_text);
+                    }
+                }
+                return;
             }
         }
 
-        // Failure
-        ob_start();
-        var_dump($this->lastResult);
-        $this->lastResult = ob_get_clean();
-
-        throw new Exception('SMS.RU request failed: ' . $this->lastResult);
+        throw new Exception('SMS.RU request failed: Response: ' . (string)$response);
     }
 
 }
