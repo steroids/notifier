@@ -63,6 +63,7 @@ class MailerNotifierProvider extends BaseNotifierProvider
         $this->mailer->compose()
             ->setTo($message->to)
             ->setHtmlBody((string)$message)
+            ->setSubject($message->title)
             ->send();
     }
 
