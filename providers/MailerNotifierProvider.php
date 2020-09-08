@@ -18,7 +18,7 @@ class MailerNotifierProvider extends BaseNotifierProvider
     public string $username = '';
     public string $password = '';
     public string $port = '587';
-    public string $encryption = 'tsl';
+    public string $encryption = 'tls';
 
     /**
      * @var Mailer|array
@@ -79,8 +79,8 @@ class MailerNotifierProvider extends BaseNotifierProvider
                 ? [
                     'class' => 'Swift_SmtpTransport',
                     'host' => $this->host,
-                    'username' => $this->host,
-                    'password' => $this->host,
+                    'username' => $this->username,
+                    'password' => $this->password,
                     'port' => $this->port,
                     'encryption' => $this->encryption,
                 ]
