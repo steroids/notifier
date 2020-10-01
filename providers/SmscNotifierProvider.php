@@ -50,7 +50,7 @@ class SmscNotifierProvider extends BaseNotifierProvider
 
         $to = $message->to;
         $to = preg_replace('/[^0-9]+/', '', $to);
-        $to = '+' . preg_replace('/[^8]/', '7', $to);
+        $to = '+' . preg_replace('/^8/', '7', $to);
 
         $post = [
             'login' => $this->login,
@@ -74,7 +74,7 @@ class SmscNotifierProvider extends BaseNotifierProvider
 
         $json = Json::decode($response);
         if (isset($json['error'])) {
-            throw new Exception("SMSC request failed (id {$json->id}, code {$json->error_code}): {$json->error}");
+            throw new Exception("SMSC request failed: $response");
         }
     }
 
