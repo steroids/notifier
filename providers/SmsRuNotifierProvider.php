@@ -77,8 +77,8 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
             $json = Json::decode($response);
 
             if (ArrayHelper::getValue($json, 'status') === 'OK') {
-                foreach ($json->sms as $phone => $data) {
-                    if ($data->status !== 'OK') {
+                foreach ($json['sms'] as $phone => $data) {
+                    if ($data['status'] !== 'OK') {
                         throw new Exception('SMS.RU request failed: ' . $data->status_code . '. ' . $data->status_text);
                     }
                 }
