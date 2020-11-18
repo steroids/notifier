@@ -60,11 +60,19 @@ class MailerNotifierProvider extends BaseNotifierProvider
      */
     public function send($message)
     {
-        $this->mailer->compose()
+        $mail = $this->mailer->compose()
             ->setTo($message->to)
             ->setHtmlBody((string)$message)
-            ->setSubject($message->title)
-            ->send();
+            ->setSubject($message->title);
+
+        // Add attachments
+        if (ArrayHelper::getValue($message->params, 'attachments')) {
+            foreach ($message->params['attachments'] as $attachment) {
+                $mail->attach($attachment);
+            }
+        }
+
+        $mail->send();
     }
 
     protected function defaultMailer()
