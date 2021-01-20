@@ -69,12 +69,12 @@ class SmscNotifierProvider extends BaseNotifierProvider
 
         // Success path
         if (!is_string($response)) {
-            throw new Exception('SMSC request failed: Response: ' . (string)$response);
+            throw new Exception("SMSC request failed: $response. \n\n Request: " . print_r($post, true));
         }
 
         $json = Json::decode($response);
         if (isset($json['error'])) {
-            throw new Exception("SMSC request failed: $response");
+            throw new Exception("SMSC request error: $response. \n\n Request: " . print_r($post, true));
         }
     }
 
