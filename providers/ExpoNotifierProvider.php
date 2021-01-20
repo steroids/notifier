@@ -44,7 +44,7 @@ class ExpoNotifierProvider extends BaseNotifierProvider
         $notification = [
             'title' => $message->title,
             'body' => (string)$message,
-            'data' => ArrayHelper::getValue($message->params, 'data'),
+            'data' => ArrayHelper::getValue($message->params, 'data','{}'),
         ];
 
         $this->pushClient->notify($channel, $notification);
