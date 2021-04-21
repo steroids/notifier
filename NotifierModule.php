@@ -19,6 +19,7 @@ class NotifierModule extends Module
     const PROVIDER_TYPE_MAIL = 'mail';
     const PROVIDER_TYPE_SMS = 'sms';
     const PROVIDER_TYPE_PUSH = 'push';
+    const PROVIDER_TYPE_STORE = 'store';
 
     /**
      * Custom template aliases
@@ -143,6 +144,7 @@ class NotifierModule extends Module
      */
     protected function resolveTemplatePath(BaseNotifierProvider $provider, string $templateName, $to, array $params, string $language)
     {
+
         $path = ArrayHelper::getValue($provider->templates, $templateName)
             ?: ArrayHelper::getValue($this->templates, $templateName)
             ?: $templateName;
@@ -162,7 +164,6 @@ class NotifierModule extends Module
             if (pathinfo($fileName, PATHINFO_EXTENSION) === '') {
                 $fileName = $fileName . '.' . Yii::$app->view->defaultExtension;
             }
-
             /** @var Module $module */
             $module = Yii::$app;
             foreach ($parts as $moduleName) {
@@ -197,7 +198,7 @@ class NotifierModule extends Module
             }
         }
 
-        if (!is_file($path)) {
+        if (!is_file($path) && !YII_ENV_TEST) {
             throw new Exception('Not found notifier template "' . $templateName . '", path: ' . $path);
         }
         return $path;
