@@ -28,8 +28,8 @@ class StoreDbNotifierProvider extends BaseNotifierProvider
     public function send($message)
     {
         $notification = new $this->modelClass([
-//            'userId' => \Yii::$app->,
-//            'templateName',
+            'userId' => $message->userId,
+            'templateName' => $message->templateName,
             'refId' => $message->params['refId'] ?? null,
             'content' => (string)$message,
             'isRead' => false,

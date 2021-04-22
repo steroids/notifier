@@ -4,6 +4,7 @@ namespace steroids\notifier\tests\unit;
 
 use app\user\models\User;
 use PHPUnit\Framework\TestCase;
+use steroids\notifier\NotifierMessage;
 use steroids\notifier\NotifierModule;
 use steroids\notifier\providers\MailerNotifierProvider;
 use steroids\notifier\providers\StoreDbNotifierProvider;
@@ -20,10 +21,17 @@ class NotifyTest extends TestCase
      */
     public function testMailNotify()
     {
+        $user = User::findOne(['id' => 1]);
+        if (!$user) {
+            $user = new User([
+                'email' => 'test@test@example.com',
+                'role' => 'user',
+            ]);
+            $user->saveOrPanic();
+        }
+
         $notifier = NotifierModule::getInstance();
-        $notifier->templates = [
-            'mail' => 'views/template.php'
-        ];
+
         $notifier->providers = [
             'mail' => [
                 'class' => MailerNotifierProvider::class
@@ -35,7 +43,13 @@ class NotifyTest extends TestCase
             'receiver' => 'receiver@mail.ru',
         ];
 
-        $notifier->send(NotifierModule::PROVIDER_TYPE_MAIL, 'template', 'receiver@mail.ru', $mailParams);
+        $notifier->send(new NotifierMessage([
+            'destinations' => [
+                NotifierModule::PROVIDER_TYPE_MAIL => 'receiver@mail.ru',
+            ],
+            'userId' => $user->id,
+            'templateName' => 'notifier/template'
+        ]));
 
         // directory that contains mails
         $mails = scandir(dirname(__DIR__) . '/testData/mail', 1);
@@ -64,10 +78,13 @@ class NotifyTest extends TestCase
                 'class' => StoreDbNotifierProvider::class
             ],
         ];
-        $notifier->templates = [
-            'store' => 'views/template.php'
-        ];
 
-        $notifier->send(NotifierModule::PROVIDER_TYPE_STORE, 'template', $user->id);
+        $notifier->send(new NotifierMessage([
+            'destinations' => [
+                NotifierModule::PROVIDER_TYPE_STORE => $user->id,
+            ],
+            'userId' => $user->id,
+            'templateName' => 'notifier/template'
+        ]));
     }
 }

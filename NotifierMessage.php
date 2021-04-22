@@ -43,6 +43,11 @@ class NotifierMessage extends BaseObject
     public ?string $language = '';
 
     /**
+     * @var string
+     */
+    public string $templateName;
+
+    /**
      * Key-value array with any parameters
      * @var array
      */
@@ -53,6 +58,18 @@ class NotifierMessage extends BaseObject
      * @var View
      */
     public View $view;
+
+    /**
+     * ProviderType-To
+     * User id
+     * @var int
+     */
+    public int $userId;
+
+    /**
+     * @var array
+     */
+    public array $destinations;
 
     /**
      * Render message content (html or text)

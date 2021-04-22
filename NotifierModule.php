@@ -43,51 +43,59 @@ class NotifierModule extends Module
 
     /**
      * Send message via provider
-     * @param string $providerType
-     * @param string $templateName
+     * @param string|NotifierMessage $message
+     * @param string|null $templateName
      * @param mixed $to Receiver email/phone/token
      * @param array $params
      * @param string|null $language
      * @throws InvalidConfigException
      * @throws \Exception
      */
-    public function send(string $providerType, string $templateName, $to, $params = [], $language = null)
+    public function send($message, string $templateName = null, $to = null, $params = [], $language = null)
     {
-        $providerName = $this->resolveProviderName($providerType, $templateName, $to, $params);
         $language = $language ?: Yii::$app->language;
 
-        // Get provider
-        $provider = $this->getProvider($providerName);
-        if (!$provider) {
-            throw new Exception('Not found notifier provider "' . $providerName . '".');
+        if(is_string($message)){
+            $message = new NotifierMessage([
+                'destinations' => [
+                    $message => $to,
+                ],
+                'language' => $language,
+                'templateName' => $templateName
+            ]);
         }
 
-        // Get template path
-        $templatePath = $this->resolveTemplatePath($provider, $templateName, $to, $params, $language);
+        foreach ($message->destinations as $providerType => $to){
+            $providerName = $this->resolveProviderName($providerType, $message->templateName, $to, $params);
 
-        // Get layout
-        $layoutPath = null;
-        if ($providerType === self::PROVIDER_TYPE_MAIL && $this->mailLayout) {
-            $layoutPath = Yii::getAlias($this->mailLayout);
-
-            // Add extension
-            if (pathinfo($layoutPath, PATHINFO_EXTENSION) === '') {
-                $layoutPath = $layoutPath . '.' . Yii::$app->view->defaultExtension;
+            // Get providers
+            $provider = $this->getProvider($providerName);
+            if (!$provider) {
+                throw new Exception('Not found notifier provider "' . $providerName . '".');
             }
+
+            // Get template path
+            $templatePath = $this->resolveTemplatePath($provider, $message->templateName, $to, $params, $language);
+
+            // Get layout
+            $layoutPath = null;
+            if ($providerType === self::PROVIDER_TYPE_MAIL && $this->mailLayout) {
+                $layoutPath = Yii::getAlias($this->mailLayout);
+
+                // Add extension
+                if (pathinfo($layoutPath, PATHINFO_EXTENSION) === '') {
+                    $layoutPath = $layoutPath . '.' . Yii::$app->view->defaultExtension;
+                }
+            }
+
+            $message->path = $templatePath;
+            $message->to = $to;
+            $message->layoutPath = $layoutPath;
+            $message->view = Yii::$app->view;
+
+            // Send
+            $provider->send($message);
         }
-
-        // Create message
-        $message = new NotifierMessage([
-            'path' => $templatePath,
-            'to' => $to,
-            'layoutPath' => $layoutPath,
-            'params' => $params,
-            'language' => $language,
-            'view' => Yii::$app->view,
-        ]);
-
-        // Send
-        $provider->send($message);
     }
 
     /**
@@ -166,6 +174,7 @@ class NotifierModule extends Module
             }
             /** @var Module $module */
             $module = Yii::$app;
+
             foreach ($parts as $moduleName) {
                 $module = $module->getModule($moduleName);
             }
@@ -189,6 +198,7 @@ class NotifierModule extends Module
                     // Find in views [moduleDir]/views/[fileName]
                     implode(DIRECTORY_SEPARATOR, [$modulePath, $fileName]),
                 ];
+
                 foreach ($dirs as $dir) {
                     $path = FileHelper::localize($dir, $language);
                     if (is_file($path)) {
@@ -197,10 +207,10 @@ class NotifierModule extends Module
                 }
             }
         }
-
-        if (!is_file($path) && !YII_ENV_TEST) {
+        if (!is_file($path)) {
             throw new Exception('Not found notifier template "' . $templateName . '", path: ' . $path);
         }
+
         return $path;
     }
 }
