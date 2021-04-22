@@ -11,18 +11,6 @@ define('YII_ENV', 'test');
 
 $config = require __DIR__ . '/../../../bootstrap.php';
 $config = ArrayHelper::merge($config, [
-    'components' => [
-        'mailer' => [
-            'class' => Mailer::class,
-            'useFileTransport' => true,
-            'fileTransportPath' => __DIR__ . '/testData/mail',
-            'viewPath' => __DIR__ . '/testData',
-            'htmlLayout' => 'layout/main.php',
-            'transport' => [
-                'class' => 'Swift_SmtpTransport',
-            ],
-        ],
-    ],
     'modules' => [
         'notifier' => [
             'class' => 'steroids\notifier\NotifierModule',
@@ -32,7 +20,15 @@ $config = ArrayHelper::merge($config, [
                     'class' => StoreDbNotifierProvider::class
                 ],
                 'mail' => [
-                    'class' => MailerNotifierProvider::class
+                    'class' => MailerNotifierProvider::class,
+                    'from' => 'test@test.ru',
+                    'mailer' => [
+                        'class' => Mailer::class,
+                        'useFileTransport' => true,
+                        'fileTransportPath' => __DIR__ . '/testData/mail',
+                        'viewPath' => __DIR__ . '/testData',
+                        'htmlLayout' => __DIR__ . 'layout/main.php'
+                    ]
                 ],
             ]
         ],

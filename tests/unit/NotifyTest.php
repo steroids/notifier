@@ -26,20 +26,18 @@ class NotifyTest extends TestCase
     public function testMailNotify()
     {
         $user = $this->createNotificationUser();
-
         $notifier = NotifierModule::getInstance();
-
-        $mailParams = [
-            'sender' => ['sender@mail.ru' => 'Test sending'],
-            'receiver' => 'receiver@mail.ru',
-        ];
 
         $notifier->send(new NotifierMessage([
             'destinations' => [
                 NotifierModule::PROVIDER_TYPE_MAIL => 'receiver@mail.ru',
             ],
             'userId' => $user->id,
-            'templateName' => 'notifier/template'
+            'templateName' => 'notifier/template',
+            'params' => [
+                'sender' => ['sender@mail.ru' => 'Test sending'],
+                'receiver' => 'receiver@mail.ru',
+            ]
         ]));
 
         // directory that contains mails
