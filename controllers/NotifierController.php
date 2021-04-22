@@ -52,6 +52,7 @@ class NotifierController extends Controller
             'userId' => Yii::$app->user->id
         ]);
         $notification->isRead = true;
+        $notification->saveOrPanic();
 
         return $notification;
     }

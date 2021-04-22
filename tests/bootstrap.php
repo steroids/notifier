@@ -1,6 +1,8 @@
 <?php
 
 use steroids\core\base\ConsoleApplication;
+use steroids\notifier\providers\MailerNotifierProvider;
+use steroids\notifier\providers\StoreDbNotifierProvider;
 use \yii\helpers\ArrayHelper;
 use yii\swiftmailer\Mailer;
 
@@ -21,6 +23,20 @@ $config = ArrayHelper::merge($config, [
             ],
         ],
     ],
+    'modules' => [
+        'notifier' => [
+            'class' => 'steroids\notifier\NotifierModule',
+            'viewPath' => __DIR__ .  '/testData/views',
+            'providers' => [
+                'store' => [
+                    'class' => StoreDbNotifierProvider::class
+                ],
+                'mail' => [
+                    'class' => MailerNotifierProvider::class
+                ],
+            ]
+        ],
+    ]
 ]);
 
-new ConsoleApplication($config);
+new \steroids\core\base\WebApplication($config);

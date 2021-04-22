@@ -3,6 +3,7 @@
 namespace steroids\notifier;
 
 use steroids\notifier\providers\BaseNotifierProvider;
+use steroids\notifier\providers\StoreDbNotifierProvider;
 use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
@@ -39,6 +40,7 @@ class NotifierModule extends Module
      */
     public array $providersClasses = [
         'mailer' => MailerNotifierProvider::class,
+        'store' => StoreDbNotifierProvider::class,
     ];
 
     /**
