@@ -7,6 +7,7 @@ use steroids\auth\enums\AuthAttributeTypeEnum;
 use steroids\auth\UserInterface;
 use steroids\notifier\forms\NotificationSearchForm;
 use steroids\notifier\models\Notification;
+use Yii;
 use yii\web\Controller;
 
 class NotifierController extends Controller
@@ -32,9 +33,9 @@ class NotifierController extends Controller
     public function actionNotifications()
     {
         $formModel = new NotificationSearchForm([
-            'userId' => \Yii::$app->user->id
+            'userId' => Yii::$app->user->id
         ]);
-        $formModel->search(\Yii::$app->request->get());
+        $formModel->search(Yii::$app->request->get());
 
         return $formModel;
     }
@@ -46,7 +47,10 @@ class NotifierController extends Controller
      */
     public function actionMarkRead($id)
     {
-        $notification = Notification::findOrPanic(['id' => $id]);
+        $notification = Notification::findOrPanic([
+            'id' => $id,
+            'userId' => Yii::$app->user->id
+        ]);
         $notification->isRead = true;
 
         return $notification;
@@ -54,7 +58,7 @@ class NotifierController extends Controller
 
     public function actionMarkReadAll()
     {
-        return Notification::updateAll(['isRead' => true], ['userId' => \Yii::$app->user->id]);
+        return Notification::updateAll(['isRead' => true], ['userId' => Yii::$app->user->id]);
     }
 
     public function actionMailTest($email = null)
