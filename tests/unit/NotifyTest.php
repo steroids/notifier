@@ -4,11 +4,11 @@ namespace steroids\notifier\tests\unit;
 
 use app\user\models\User;
 use PHPUnit\Framework\TestCase;
+use steroids\core\tests\traits\ApiCallTrait;
 use steroids\core\tests\traits\ModelsCleanupTrait;
 use steroids\notifier\models\Notification;
 use steroids\notifier\NotifierMessage;
 use steroids\notifier\NotifierModule;
-use steroids\core\tests\traits\ApiCallTrait;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 
@@ -52,6 +52,13 @@ class NotifyTest extends TestCase
         $this->assertTrue($ext === 'eml');
     }
 
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     * @throws \steroids\core\exceptions\ModelSaveException
+     * @throws \yii\base\InvalidRouteException
+     * @throws \yii\console\Exception
+     */
     public function testStoreNotifier()
     {
         $user = $this->createNotificationUser();
@@ -104,7 +111,7 @@ class NotifyTest extends TestCase
         $this->assertNotNull($request);
 
         //mark single notification is read
-        $this->callApi('POST /api/v1/notifier/notifications/'.$notification->id.'/mark-read', $user->id);
+        $this->callApi('POST /api/v1/notifier/notifications/' . $notification->id . '/mark-read', $user->id);
         $notification->refresh();
         $this->assertNotFalse($notification->isRead);
 
@@ -115,6 +122,10 @@ class NotifyTest extends TestCase
         $this->assertNotFalse($secondNotification->isRead);
     }
 
+    /**
+     * @return User|null
+     * @throws \steroids\core\exceptions\ModelSaveException
+     */
     private function createNotificationUser()
     {
         $user = User::findOne(['id' => 1]);
