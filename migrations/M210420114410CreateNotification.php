@@ -8,7 +8,7 @@ class M210420114410CreateNotification extends Migration
 {
     public function safeUp()
     {
-        $this->createTable('notifications', [
+        $this->createTable('notifier_notifications', [
             'id' => $this->primaryKey(),
             'userId' => $this->integer(),
             'templateName' => $this->string(),
@@ -22,6 +22,6 @@ class M210420114410CreateNotification extends Migration
 
     public function safeDown()
     {
-        $this->dropTable('notifications');
+        $this->dropTable('notifier_notifications');
     }
 }

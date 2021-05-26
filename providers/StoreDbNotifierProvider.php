@@ -8,6 +8,7 @@ use steroids\notifier\models\Notification;
 use steroids\notifier\NotifierMessage;
 use steroids\notifier\NotifierModule;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Json;
 use function PHPUnit\Framework\isEmpty;
 
 class StoreDbNotifierProvider extends BaseNotifierProvider
@@ -28,15 +29,16 @@ class StoreDbNotifierProvider extends BaseNotifierProvider
      */
     public function send($message)
     {
-        $refId = ArrayHelper::remove($message->params, 'refId');
-        $params = !empty($message->params) ? json_encode($message->params) : null;
+        $params = $message->params;
+        $refId = ArrayHelper::remove($params, 'refId');
+        ArrayHelper::remove($params, 'content'); // Remove content from params
 
         $notification = new $this->modelClass([
             'userId' => $message->userId,
             'templateName' => $message->templateName,
             'refId' => $refId,
             'content' => (string)$message,
-            'paramsJson' => $params
+            'paramsJson' => !empty($params) ? Json::encode($params) : null
         ]);
 
         $notification->saveOrPanic();

@@ -149,7 +149,7 @@ class NotifierModule extends Module
      * @param $to
      * @param array $params
      * @param string $language
-     * @return mixed|string|null
+     * @return string
      * @throws Exception
      */
     protected function resolveTemplatePath(BaseNotifierProvider $provider, string $templateName, $to, array $params, string $language)
@@ -161,7 +161,7 @@ class NotifierModule extends Module
 
         // Check is real path
         if (substr($path, 0, 1) === '/' || strpos($path, '@') !== false || is_file($path)) {
-            return null;
+            return $path;
         }
 
         // Find in module
