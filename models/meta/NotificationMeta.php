@@ -20,12 +20,18 @@ abstract class NotificationMeta extends Model
 {
     public static function tableName()
     {
-        return 'notifications';
+        return 'notifier_notifications';
     }
 
     public function fields()
     {
         return [
+            'id',
+            'templateName',
+            'refId',
+            'content',
+            'isRead',
+            'createTime',
         ];
     }
 
@@ -54,7 +60,7 @@ abstract class NotificationMeta extends Model
             'id' => [
                 'label' => Yii::t('steroids', 'ID'),
                 'appType' => 'primaryKey',
-                'isPublishToFrontend' => false
+                'isPublishToFrontend' => true
             ],
             'userId' => [
                 'label' => Yii::t('steroids', 'Пользователь'),
@@ -62,16 +68,16 @@ abstract class NotificationMeta extends Model
                 'isPublishToFrontend' => false
             ],
             'templateName' => [
-                'isPublishToFrontend' => false
+                'isPublishToFrontend' => true
             ],
             'refId' => [
                 'appType' => 'integer',
-                'isPublishToFrontend' => false
+                'isPublishToFrontend' => true
             ],
             'content' => [
                 'label' => Yii::t('steroids', 'Контент'),
                 'appType' => 'text',
-                'isPublishToFrontend' => false
+                'isPublishToFrontend' => true
             ],
             'paramsJson' => [
                 'appType' => 'text',
@@ -79,12 +85,12 @@ abstract class NotificationMeta extends Model
             ],
             'isRead' => [
                 'appType' => 'boolean',
-                'isPublishToFrontend' => false
+                'isPublishToFrontend' => true
             ],
             'createTime' => [
                 'label' => Yii::t('steroids', 'Добавлен'),
                 'appType' => 'autoTime',
-                'isPublishToFrontend' => false,
+                'isPublishToFrontend' => true,
                 'touchOnUpdate' => false
             ]
         ]);
