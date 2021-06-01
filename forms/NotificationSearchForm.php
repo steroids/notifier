@@ -18,6 +18,8 @@ class NotificationSearchForm extends NotificationSearchFormMeta
     {
         parent::prepare($query);
 
-        $query->andWhere(['userId' => $this->userId]);
+        $query
+            ->andWhere(['userId' => $this->userId])
+            ->orderBy(['id' => SORT_DESC]);
     }
 }
