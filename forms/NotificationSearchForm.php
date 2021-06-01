@@ -20,6 +20,7 @@ class NotificationSearchForm extends NotificationSearchFormMeta
 
         $query
             ->andWhere(['userId' => $this->userId])
+            ->andFilterWhere(['isRead' => $this->isRead])
             ->orderBy(['id' => SORT_DESC]);
     }
 }

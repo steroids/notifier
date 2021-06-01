@@ -12,12 +12,17 @@ abstract class NotificationSearchFormMeta extends SearchModel
     * @var integer
     */
     public $userId;
+    /**
+    * @var boolean
+    */
+    public $isRead;
 
     public function rules()
     {
         return [
             ...parent::rules(),
             ['userId', 'integer'],
+            ['isRead', 'steroids\\core\\validators\\ExtBooleanValidator'],
         ];
     }
 
@@ -38,6 +43,10 @@ abstract class NotificationSearchFormMeta extends SearchModel
                 'label' => Yii::t('steroids', 'Пользователь'),
                 'appType' => 'integer',
                 'isSortable' => false
+            ],
+            'isRead' => [
+                'label' => Yii::t('steroids', 'Прочитано?'),
+                'appType' => 'boolean'
             ]
         ];
     }
