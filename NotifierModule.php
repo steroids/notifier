@@ -63,7 +63,8 @@ class NotifierModule extends Module
                     $message => $to,
                 ],
                 'language' => $language,
-                'templateName' => $templateName
+                'templateName' => $templateName,
+                'params' => $params
             ]);
         }
 
