@@ -9,20 +9,20 @@ use steroids\notifier\models\Notification;
 abstract class NotificationSearchFormMeta extends SearchModel
 {
     /**
-    * @var integer
-    */
+     * @var integer
+     */
     public $userId;
     /**
-    * @var boolean
-    */
-    public $isRead;
+     * @var boolean
+     */
+    public $skipRead;
 
     public function rules()
     {
         return [
             ...parent::rules(),
             ['userId', 'integer'],
-            ['isRead', 'steroids\\core\\validators\\ExtBooleanValidator'],
+            ['skipRead', 'steroids\\core\\validators\\ExtBooleanValidator'],
         ];
     }
 
@@ -44,7 +44,7 @@ abstract class NotificationSearchFormMeta extends SearchModel
                 'appType' => 'integer',
                 'isSortable' => false
             ],
-            'isRead' => [
+            'skipRead' => [
                 'label' => Yii::t('steroids', 'Прочитано?'),
                 'appType' => 'boolean'
             ]
