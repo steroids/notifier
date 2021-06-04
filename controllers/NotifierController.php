@@ -17,10 +17,10 @@ class NotifierController extends Controller
         return [
             'notifier' => [
                 'items' => [
-                    'mail-test' => 'GET /api/v1/notifier/mail-test',
-                    'notifications' => 'GET /api/v1/notifier/notifications',
-                    'mark-read' => 'POST /api/v1/notifier/notifications/<id:\d+>/mark-read',
-                    'mark-read-all' => 'POST /api/v1/notifier/notifications/mark-read-all',
+                    'mail-test' => 'GET /api/<version>/notifier/mail-test',
+                    'notifications' => 'GET /api/<version>/notifier/notifications',
+                    'mark-read' => 'POST /api/<version>/notifier/notifications/<id:\d+>/mark-read',
+                    'mark-read-all' => 'POST /api/<version>/notifier/notifications/mark-read-all',
                 ],
             ],
         ];
