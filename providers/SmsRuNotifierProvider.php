@@ -51,7 +51,7 @@ class SmsRuNotifierProvider extends BaseNotifierProvider
 
         $to = $message->to;
         $to = preg_replace('/[^0-9]+/', '', $to);
-        $to = preg_replace('/[^8]/', '7', $to);
+        $to = '+' . preg_replace('/^8/', '7', $to);
 
         $post = [
             'api_id' => $this->apiId,
