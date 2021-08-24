@@ -8,7 +8,7 @@
         "ext-curl": "*",
         "lib-pcre": "*",
         "steroids/core": "*",
-        "alymosul/exponent-server-sdk-php": "^1.2"
+        "kozhindev/expo-server-sdk-php": "1.*"
     },
     "autoload": {
         "psr-4": {"steroids\\notifier\\": ""}

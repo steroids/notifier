@@ -27,7 +27,7 @@ class ExpoNotifierProvider extends BaseNotifierProvider
     public function getPushClient()
     {
         if (!$this->_pushClient) {
-            $this->_pushClient = Expo::normalSetup();
+            $this->_pushClient = new Expo();
         }
         return $this->_pushClient;
     }
@@ -37,16 +37,12 @@ class ExpoNotifierProvider extends BaseNotifierProvider
      */
     public function send($message)
     {
-        // Subscribes a given channel to the Expo Push Notifications.
-        $channel = ArrayHelper::getValue($message->params, 'channel', 'default');
-
-        $this->pushClient->subscribe($channel, $message->to);
         $notification = [
             'title' => $message->title,
             'body' => (string)$message,
             'data' => ArrayHelper::getValue($message->params, 'data','{}'),
         ];
 
-        $this->pushClient->notify($channel, $notification);
+        $this->pushClient->notify($message->to, $notification);
     }
 }
