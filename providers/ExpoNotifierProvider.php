@@ -43,6 +43,9 @@ class ExpoNotifierProvider extends BaseNotifierProvider
             'data' => ArrayHelper::getValue($message->params, 'data','{}'),
         ];
 
-        $this->pushClient->notify($message->to, $notification);
+        $this->pushClient->notify(
+            !is_array($message->to) ? [$message->to] : $message->to,
+            $notification
+        );
     }
 }
