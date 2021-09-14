@@ -2,9 +2,9 @@
 
 namespace steroids\notifier\providers;
 
-use yii\base\Exception;
-use yii\helpers\Json;
+use steroids\notifier\exceptions\NotifierException;
 use steroids\notifier\NotifierModule;
+use yii\helpers\Json;
 
 /**
  * Registration page
@@ -69,12 +69,12 @@ class SmscNotifierProvider extends BaseNotifierProvider
 
         // Success path
         if (!is_string($response)) {
-            throw new Exception("SMSC request failed: $response. \n\n Request: " . print_r($post, true));
+            throw new NotifierException("SMSC request failed: $response. \n\n Request: " . print_r($post, true));
         }
 
         $json = Json::decode($response);
         if (isset($json['error'])) {
-            throw new Exception("SMSC request error: $response. \n\n Request: " . print_r($post, true));
+            throw new NotifierException("SMSC request error: $response. \n\n Request: " . print_r($post, true));
         }
     }
 
