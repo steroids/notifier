@@ -2,6 +2,7 @@
 
 namespace steroids\notifier\providers;
 
+use steroids\notifier\exceptions\InvalidPhoneNumberException;
 use steroids\notifier\exceptions\NotifierException;
 use steroids\notifier\NotifierModule;
 use yii\helpers\Json;
@@ -30,6 +31,8 @@ class SmscNotifierProvider extends BaseNotifierProvider
      * @var string
      */
     public ?string $sender = '';
+
+    public const INVALID_PHONE_NUMBER_ERROR = 'invalid number';
 
     /**
      * @inheritDoc
@@ -74,6 +77,10 @@ class SmscNotifierProvider extends BaseNotifierProvider
 
         $json = Json::decode($response);
         if (isset($json['error'])) {
+            if ($json['error'] === self::INVALID_PHONE_NUMBER_ERROR) {
+                throw new InvalidPhoneNumberException();
+            }
+
             throw new NotifierException("SMSC request error: $response. \n\n Request: " . print_r($post, true));
         }
     }
