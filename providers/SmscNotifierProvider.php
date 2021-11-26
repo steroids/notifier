@@ -62,9 +62,12 @@ class SmscNotifierProvider extends BaseNotifierProvider
             'mes' => (string)$message,
             'fmt' => 3, // json
         ];
-        if ($this->sender) {
-            $post['sender'] = $this->sender;
+
+        $sender = $message->from ?: $this->sender;
+        if ($sender) {
+            $post['sender'] = $sender;
         }
+
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
         $response = curl_exec($ch);
