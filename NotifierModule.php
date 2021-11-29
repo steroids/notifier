@@ -58,14 +58,7 @@ class NotifierModule extends Module
         $language = $language ?: Yii::$app->language;
 
         if(is_string($message)){
-            $message = new NotifierMessage([
-                'destinations' => [
-                    $message => $to,
-                ],
-                'language' => $language,
-                'templateName' => $templateName,
-                'params' => $params
-            ]);
+            $message = static::getDefaultNotifierMessage($message, $to, $language, $templateName, $params);
         }
 
         foreach ($message->destinations as $providerType => $to){
@@ -215,5 +208,25 @@ class NotifierModule extends Module
         }
 
         return $path;
+    }
+
+    /**
+     * @param string $message
+     * @param $to
+     * @param string $language
+     * @param string|null $templateName
+     * @param array $params
+     * @return NotifierMessage
+     */
+    public static function getDefaultNotifierMessage(string $message, $to, string $language, ?string $templateName, array $params): NotifierMessage
+    {
+        return new NotifierMessage([
+            'destinations' => [
+                $message => $to,
+            ],
+            'language' => $language,
+            'templateName' => $templateName,
+            'params' => $params
+        ]);
     }
 }
