@@ -28,7 +28,7 @@ class NotifierMessage extends BaseObject
      * Sender email/phone/token
      * @var string
      */
-    public string $from = '';
+    public ?string $from = '';
 
     /**
      * Mail layout path
